@@ -6,7 +6,7 @@
 #include "i2c.h"
 #include "bme280.h"
 #include "esp12e.h"
-#include "x10.h"
+//#include "x10.h"
 //#include "eeprom.h"
 
 int FOSC __attribute__((space(prog), address(0xF80000))) = 0xC70A ;     //FRC w/PLL 8x //64MHz?
@@ -39,13 +39,13 @@ int main(void) {
     
     DELAY_MS(500);
     
-    testI2C();
+    //testI2C();
         
     while (1) {
         if (!PORTDbits.RD2 && i==0) {
             i=1;
-            logUART2("I2C test.\n\r");
-            testI2C();
+            //logUART2("I2C test.\n\r");
+            //testI2C();
         }
         if (i & PORTDbits.RD2) {
             i=0;
