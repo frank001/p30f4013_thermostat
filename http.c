@@ -16,6 +16,7 @@ char *endconn="wClient:close();\r\ncollectgarbage();\r\n";
 extern long bme280_temperature;
 extern long unsigned int bme280_pressure;
 extern long unsigned int bme280_humidity;
+extern unsigned int lightlevel;
 
 typedef union {
     long L;
@@ -104,38 +105,41 @@ void handleHTTP(void) {
     char *body;
     
     
-    float t,h,p;
-    char *temperature; //*humidity, *pressure;
+    float t,h,p,l;
+    //char *temperature; //*humidity, *pressure;
     
     
     t=((float)bme280_temperature)/100;
     h=((float)bme280_humidity)/1024;
     p=((float)bme280_pressure)/256;
-    
+    l=((float)lightlevel);
     //sprintf(&temperature,"%f",t);
     //temperature=ftoa(t);
-    temperature = ftoa(t);
+    //temperature = ftoa(t);
     
     //body="Temperature: ";
     //strcat(body, temperature);
     //body=temperature;
 
     cmdUART1(header);
-    cmdUART1("Temperature: ");
+    cmdUART1("T: ");
     cmdUART1(ftoa(t));
-    cmdUART1("°C.<br/>");
+    cmdUART1(" °C.<br/>");
     
-    cmdUART1("Humidity: ");
+    cmdUART1("H: ");
     cmdUART1(ftoa(h));
-    cmdUART1("%.<br/>");
+    cmdUART1(" %.<br/>");
     
-    cmdUART1("Pressure: ");
+    cmdUART1("P: ");
     cmdUART1(ftoa(p));
     cmdUART1(" Pa.<br/>");
     
+    cmdUART1("L: ");
+    cmdUART1(ftoa(l));
+    cmdUART1(" [TBD].<br/>");
     
     //cmdUART1(body);
     cmdUART1(footer);
     cmdUART1(endconn); //"
-    testI2C();
+    
 }
