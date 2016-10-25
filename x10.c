@@ -5,7 +5,7 @@
 
 void __attribute__((__interrupt__, no_auto_psv)) _IC1Interrupt(void) {      //input capture interrupt
     unsigned char d;
-    d=0;
+    d=PORTDbits.RD8;
     IFS0bits.IC1IF = 0; 
 }
 
