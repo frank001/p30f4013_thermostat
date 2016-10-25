@@ -217,8 +217,8 @@ void __attribute__((interrupt, no_auto_psv)) _SI2CInterrupt(void) {
 
 //DEBUGGING
 void testI2C() {
-    unsigned char d,i;
-    d=bme280_sample();
+    //unsigned char d,i;
+    //d=bme280_sample();
      
 }
 
