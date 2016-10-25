@@ -20,11 +20,18 @@ void initESP12E(void) {
 }
 
 void resetWIFI(void){
-    logUART2("Reset ESP12E.\r\n");
-    DELAY_MS(10);
-    LATFbits.LATF0 = 0;
-    DELAY_MS(10);
-    LATFbits.LATF0 = 1;
-    DELAY_MS(10);
+    unsigned char d=0;
+    if (d) {
+        logUART2("DISABLED: Reset ESP12E.\r\n");
+        DELAY_MS(20);
+    }
+    else {
+        logUART2("Reset ESP12E.\r\n");
+        DELAY_MS(10);
+        LATFbits.LATF0 = 0;
+        DELAY_MS(10);
+        LATFbits.LATF0 = 1;
+        DELAY_MS(10);
+    }
 }
 
