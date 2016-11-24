@@ -14,6 +14,9 @@ extern unsigned char bme280_data[];
 extern unsigned char bme280_comp[];
 extern unsigned char bme280_comp_cntr;
 
+extern unsigned char hyt221_sampledata;                     //more flagging
+extern unsigned char hyt221_data[];
+
 unsigned char data_flag;
 unsigned char rcv;
 
@@ -35,18 +38,19 @@ void i2c_init(void) {               //todo: return error code
                 I2C_STOP_DIS & I2C_RESTART_DIS 
                 & I2C_START_DIS); 
     
-    OpenI2C(config1, I2C_BAUD);
+    OpenI2C(config1, I2CBAUD);
+    //I2CBRG = I2CBAUD;
     
-    //IEC0bits.MI2CIE = 1 ; // Master Interrupt Enable
-    //I2CCONbits.RCEN = 1;    //enable Master receive interrupt
-    //IFS0bits.MI2CIF = 0 ; // Clr Master Interrupt Flag
+    IEC0bits.MI2CIE = 1 ; // Master Interrupt Enable
+    I2CCONbits.RCEN = 1;    //enable Master receive interrupt
+    IFS0bits.MI2CIF = 0 ; // Clr Master Interrupt Flag
     I2CADD = I2C_ADDRESS;
     
     IEC0bits.SI2CIE = 1 ; // Slave Interrupt Enable
     IFS0bits.SI2CIF = 0 ; // Clr Slave Interrupt Flag
     
     /*
-    I2CBRG = I2C_BAUD;
+    
     
     I2CCONbits.I2CSIDL = 0 ;
     I2CCONbits.SCLREL = 1 ;
@@ -78,7 +82,7 @@ void i2c_init(void) {               //todo: return error code
 //I2C Master routines
 unsigned char readI2C(unsigned char address, unsigned char index, unsigned char length) {       //TODO: return error code
     unsigned char data, cntr;
-    i2c_init();
+    //i2c_init();
     IdleI2C();
     StartI2C();
     
@@ -90,15 +94,18 @@ unsigned char readI2C(unsigned char address, unsigned char index, unsigned char 
     IdleI2C();
     
     RestartI2C();
-    DELAY_US(10);         
+    DELAY_US(100);         
     IdleI2C();
     
+    
     MasterWriteI2C((address<<1) | I2CREAD);
-    IdleI2C();
+    //IdleI2C();
     
     cntr =0;
     while (cntr<length) {
+        IdleI2C();
         data = MasterReadI2C();
+        
         switch (bme280_sampledata) {
             case 1:
                 bme280_data[cntr] = data;
@@ -107,7 +114,11 @@ unsigned char readI2C(unsigned char address, unsigned char index, unsigned char 
                 bme280_comp[bme280_comp_cntr++] = data;
                 break;
             default:
-                i2c_reg_map[i2c_reg_addr++] = data;
+                if (hyt221_sampledata) {
+                    hyt221_data[cntr++] = data;
+                } else {
+                    i2c_reg_map[i2c_reg_addr++] = data;
+                }
                 break;
             
         }
@@ -118,22 +129,23 @@ unsigned char readI2C(unsigned char address, unsigned char index, unsigned char 
         }*/
         
         IdleI2C();
+        //DELAY_US(100);
         if (cntr==(length-1)) NotAckI2C(); else AckI2C();
-        DELAY_US(10);
+        IdleI2C();
+        //DELAY_US(500);
+        //DELAY_US(5);
         cntr++;
     }
-    //i2c_reg_map[i2c_reg_addr++]=MasterReadI2C();
-    
-    //NotAckI2C();
-    IdleI2C();
+
+    //IdleI2C();
     StopI2C();
     IdleI2C();
-    CloseI2C();
+    //CloseI2C();
     return 0;
 }
 
 unsigned char writeI2C(unsigned char address, unsigned char index, unsigned char data) {        //TODO: return error code
-    i2c_init();
+    //i2c_init();
     IdleI2C();
     StartI2C();
     
@@ -149,7 +161,7 @@ unsigned char writeI2C(unsigned char address, unsigned char index, unsigned char
     
     StopI2C();
     IdleI2C();
-    CloseI2C();
+    //CloseI2C();
     
     
     return 0;
@@ -163,6 +175,7 @@ void __attribute__((interrupt, no_auto_psv)) _MI2CInterrupt(void) {
     unsigned char i;
     data=I2CRCV;
     i2c_reg_map[i2c_reg_addr++] = data;
+    i2c_reg_addr %= sizeof(i2c_reg_map);            //limit address to size of register map
     i=0;
     //_RCEN = 0;           //disable Master receive interrupt
     IFS0bits.MI2CIF = 0;    //clear the interrupt flag
