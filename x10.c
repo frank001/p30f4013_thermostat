@@ -2,6 +2,13 @@
 
 #include "x10.h"
 
+//https://bitbucket.org/fuzzillogic/433mhzforarduino/wiki/Home
+
+//http://ww1.microchip.com/downloads/en/AppNotes/91045a.pdf
+
+//http://ww1.microchip.com/downloads/en/AppNotes/00831b.pdf
+
+
 
 void __attribute__((__interrupt__, no_auto_psv)) _IC1Interrupt(void) {      //input capture interrupt
     unsigned char d;
