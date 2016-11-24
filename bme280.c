@@ -48,7 +48,7 @@ unsigned char bme280_init(void) {
     readI2C(BME280_ADDRESS, 0xE1, 7);                    //read compensation values for humidity
     bme280_sampledata = 0;
     
-    DELAY_MS(20);                                           //give some time to start measurements
+    //DELAY_MS(10);                                           //give some time to start measurements
     return 0;
 }
 
