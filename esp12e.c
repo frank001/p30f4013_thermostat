@@ -1,9 +1,10 @@
 #include <p30f4013.h>
 #include "config.h"
 #include "esp12e.h"
-#include "uart.h"
+
 
 unsigned char wfStatus;
+
 
 
 void initESP12E(void) {
@@ -11,22 +12,17 @@ void initESP12E(void) {
     resetWIFI();
     wfStatus++;
     while (wfStatus<2){
-        cmdUART1("print(wifi.sta.status())\r\n");
-        doUART();
-        DELAY_MS(100);
+        DELAY_MS(500);
     }
-    cmdUART1("srv=net.createServer(net.TCP);srv:listen(80, function(conn) conn:on(\"receive\",function(client,request) print(request);wClient=client;end)end);\r\n");  //hello\"); client:close(); collectgarbage(); end) end)\n\r");
-    logUART2("Running.\r\n");
+    
 }
 
 void resetWIFI(void){
     unsigned char d=0;
     if (d) {
-        logUART2("DISABLED: Reset ESP12E.\r\n");
         DELAY_MS(20);
     }
     else {
-        logUART2("Reset ESP12E.\r\n");
         DELAY_MS(10);
         LATFbits.LATF0 = 0;
         DELAY_MS(10);
