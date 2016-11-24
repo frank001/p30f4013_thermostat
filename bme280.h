@@ -14,7 +14,7 @@
 #define BME280HUMSAM_REG 0xf2
 
 #define BME280_ID 0x60
-#define OSS 1               //oversampling 
+#define OSS 0x04               //8x oversampling 
 
 unsigned char bme280_init(void);
 unsigned char bme280_sample(void);
